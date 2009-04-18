@@ -1,0 +1,54 @@
+let zero = λ f x. x,
+    succ = λ n f x. (f (n f x)),
+    pred = λ n f x. (n (λ g h. (h (g f))) (λ u. x) (λ u. u)) 
+in
+
+let one = (succ zero) in
+let two = (succ one) in
+let three = (succ two) in
+let four = (succ three) in
+let five = (succ four) 
+in
+
+let addN = λ m n. (m succ n) in
+let multN = λ m n. (m (addN n) zero) in
+let exptN = λ m n. (n (multN m) one)
+in
+
+let true = λ x y. x,
+    false = λ x y. y,
+    and = λ p q. (p q p),
+    or = λ p q. (p p q),
+    not = λ x p q. (x q p),
+    if = λ c p q. (c p q)
+in
+let iszero = λ n. (n (λ x. false) true),
+    isnonzero = λ n. (not (iszero n))
+in
+
+let ycomb = λ g. ((λ x. (g (x x))) (λ x. (g (x x)))) in
+
+let countprime = λ f n. (if (iszero n) zero (addN n (f (pred n)))) in
+let count = λ x. (countprime (ycomb countprime) x) in
+
+let factprime = λ f n. ((iszero n) (one) (multN n (f (pred n)))) in
+let factorial = λ x. (factprime (ycomb factprime) x) 
+in
+
+let pair = λ a b f. (f a b),
+    fst = λ x. (x true),
+    snd = λ x. (x false) in
+let nil = (pair true true),
+    isnil = λ l. (fst l),
+    head = λ l. (fst (snd l)),
+    tail = λ l. (snd (snd l)),
+    cons = λ a b. (pair false (pair a b)) in
+let eleprime = λ f l n. ((iszero n) (head l) (f (tail l) (pred n))) in
+let ele = λ l n. (eleprime (ycomb eleprime) l n) in
+let sumNprime = λ f l. ((isnil l) zero (addN (head l) (f (tail l)))) in
+let sumN = λ l. (sumNprime (ycomb sumNprime) l)
+
+in
+let list = (cons one (cons two (cons three (cons four (cons five nil)))))
+in
+(putNat (sumN list))
