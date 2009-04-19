@@ -42,13 +42,42 @@ let nil = (pair true true),
     isnil = λ l. (fst l),
     head = λ l. (fst (snd l)),
     tail = λ l. (snd (snd l)),
-    cons = λ a b. (pair false (pair a b)) in
-let eleprime = λ f l n. ((iszero n) (head l) (f (tail l) (pred n))) in
-let ele = λ l n. (eleprime (ycomb eleprime) l n) in
-let sumNprime = λ f l. ((isnil l) zero (addN (head l) (f (tail l)))) in
-let sumN = λ l. (sumNprime (ycomb sumNprime) l)
-
+    cons = λ a b. (pair false (pair a b))
 in
+
+let eleprime = λ f l n. ((iszero n) (head l) (f (tail l) (pred n))) in
+let ele = λ l n. (eleprime (ycomb eleprime) l n)
+in
+
+let mapprime = λ f g l. ((isnil l) nil (cons (g (head l)) (f g (tail l)))) in
+let map = λ g l. (mapprime (ycomb mapprime) g l)
+in
+
+let foldrprime = λ f g z l. ((isnil l) z (g (head l) (f g z (tail l)))) in
+let foldr = λ g z l. (foldrprime (ycomb foldrprime) g z l)
+in
+
+let putListNprime = λ f l. ((isnil l) zero (addN (putNat (head l))) (f (tail l))) in
+let putListN = λ l. (putListNprime (ycomb putListNprime) l)
+in
+
+let sumN = λ l. (foldr addN zero l),
+    productN = λ l. (foldr multN one l)
+in
+
+let addI = λ m n. (pair (add (fst m) (fst n)) (add (snd m) (snd n))),
+    subtractI = λ m n. (pair (add (fst m) (snd n)) 
+    	      	       	     (add (snd m) (fst n))),
+    multiplyI = λ m n. (pair
+			(add
+			 (mult (fst n) (fst m))
+			 (mult (snd n) (snd m)))
+			(add
+			 (mult (fst n) (snd m))
+			 (mult (snd n) (fst n))))
+			       
+in
+
 let list = (cons one (cons two (cons three (cons four (cons five nil)))))
 in
-(putNat (sumN list))
+(putNat (productN list))
