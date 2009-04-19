@@ -36,7 +36,7 @@ I will try and keep to this as much as possible, but if I deviate a little, so w
 >     | Boolean Bool
 >     | Let [(Identifier,Term)] Term
 >       deriving Show
->     
+
 
 I've been told off (in #haskell) for making show pretty-print - show should produce valid code - so instead define a pretty-print function
 
@@ -103,6 +103,13 @@ Make a 'default' environment that gives the IO functions
 > eval :: Term -> U
 > eval = evalWith Map.empty
 
+
+> evalWith :: Term -> Reader Environment U
+> evalWith 
+
+
+
+
 This evaluates an expression in the designated environment.
 
 > evalWith :: Environment -> Term -> U
@@ -139,6 +146,13 @@ Prettier versions of the constructors, just to be used in case I want to fiddle 
 --------------
 | The parser |
 --------------
+Whitespace is a space or a newline
+
+> whitespace :: Parser ()
+> whitespace = do
+>   many (oneOf " \n\t" <?> "whitespace")
+>   return ()
+
 An identifier is just a string...
 
 > parseIdentifier :: Parser Identifier
@@ -157,7 +171,7 @@ A function application is a list of identifiers wrapped in brackets.
 > parseFunctionApplication :: Parser Term
 > parseFunctionApplication = do
 >   char '(' <?> "opening bracket"
->   identifiers <- sepBy1 parseExpression (char ' ' <?> "")
+>   identifiers <- sepBy1 parseExpression whitespace
 >   char ')' <?> "closing bracket"
 >   return $ makeApplications identifiers
 >     where
@@ -168,10 +182,10 @@ A lambda has the form λ a b c. <expression>
 
 > parseLambda = do
 >   try(string "λ")
->   many (char ' ')
->   identifiers <- sepEndBy1 parseIdentifier (many $ (char ' ' <?> "identifier spacer"))
+>   whitespace
+>   identifiers <- sepEndBy1 parseIdentifier whitespace
 >   char '.'
->   many (char ' ')
+>   whitespace
 >   expr <- parseExpression
 >   return $ foldr Lambda expr identifiers
 
@@ -179,18 +193,18 @@ A definition is <identifier> = <expression>
 
 > parseDefinition = do
 >   identifier <- parseIdentifier
->   many (char ' ')
+>   whitespace
 >   char '='
->   many (char ' ')
+>   whitespace
 >   term <- parseExpression
 >   return (identifier,term)
 
 > parseLet = do
 >   try(string "let ")
->   definitions <- sepBy1 parseDefinition (string "," >> many (oneOf "\n ")<?> "")
->   many (oneOf " \n")
+>   definitions <- sepBy1 parseDefinition (string "," >> whitespace <?> "")
+>   whitespace
 >   string "in"
->   many (oneOf " \n")
+>   whitespace
 >   term <- parseExpression
 >   return $ Let definitions term
 
