@@ -1,83 +1,11 @@
-let zero = λ f x. x,
-    succ = λ n f x. (f (n f x)),
-    pred = λ n f x. (n (λ g h. (h (g f))) (λ u. x) (λ u. u)) 
-in
 
-let one = (succ zero) in
-let two = (succ one) in
-let three = (succ two) in
-let four = (succ three) in
-let five = (succ four) 
+let a = (rational 1i 1i),
+    b = (rational 1i 2i),
+    c = (rational 1i 4i),
+    d = (rational 1i 8i),
+    e = (rational 1i 16i),
+    f = (rational 1i 32i)
 in
-
-let addN = λ m n. (m succ n) in
-let multN = λ m n. (m (addN n) zero) in
-let exptN = λ m n. (n (multN m) one)
+let list = (cons a (cons b (cons c (cons d (cons e (cons f nil))))))
 in
-
-let true = λ x y. x,
-    false = λ x y. y,
-    and = λ p q. (p q p),
-    or = λ p q. (p p q),
-    not = λ x p q. (x q p),
-    if = λ c p q. (c p q)
-in
-let iszero = λ n. (n (λ x. false) true),
-    isnonzero = λ n. (not (iszero n))
-in
-
-let ycomb = λ g. ((λ x. (g (x x))) (λ x. (g (x x)))) in
-
-let countprime = λ f n. (if (iszero n) zero (addN n (f (pred n)))) in
-let count = λ x. (countprime (ycomb countprime) x) in
-
-let factprime = λ f n. ((iszero n) (one) (multN n (f (pred n)))) in
-let factorial = λ x. (factprime (ycomb factprime) x) 
-in
-
-let pair = λ a b f. (f a b),
-    fst = λ x. (x true),
-    snd = λ x. (x false) in
-let nil = (pair true true),
-    isnil = λ l. (fst l),
-    head = λ l. (fst (snd l)),
-    tail = λ l. (snd (snd l)),
-    cons = λ a b. (pair false (pair a b))
-in
-
-let eleprime = λ f l n. ((iszero n) (head l) (f (tail l) (pred n))) in
-let ele = λ l n. (eleprime (ycomb eleprime) l n)
-in
-
-let mapprime = λ f g l. ((isnil l) nil (cons (g (head l)) (f g (tail l)))) in
-let map = λ g l. (mapprime (ycomb mapprime) g l)
-in
-
-let foldrprime = λ f g z l. ((isnil l) z (g (head l) (f g z (tail l)))) in
-let foldr = λ g z l. (foldrprime (ycomb foldrprime) g z l)
-in
-
-let putListNprime = λ f l. ((isnil l) zero (addN (putNat (head l))) (f (tail l))) in
-let putListN = λ l. (putListNprime (ycomb putListNprime) l)
-in
-
-let sumN = λ l. (foldr addN zero l),
-    productN = λ l. (foldr multN one l)
-in
-
-let addI = λ m n. (pair (add (fst m) (fst n)) (add (snd m) (snd n))),
-    subtractI = λ m n. (pair (add (fst m) (snd n)) 
-    	      	       	     (add (snd m) (fst n))),
-    multiplyI = λ m n. (pair
-			(add
-			 (mult (fst n) (fst m))
-			 (mult (snd n) (snd m)))
-			(add
-			 (mult (fst n) (snd m))
-			 (mult (snd n) (fst n))))
-			       
-in
-
-let list = (cons one (cons two (cons three (cons four (cons five nil)))))
-in
-(putNat (productN list))
+(putRational (sumR list))
